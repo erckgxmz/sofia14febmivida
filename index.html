@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para ti 💖</title>
+    <link rel="stylesheet" href="pink heart.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+        #carta {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="pinkboard"></canvas>
+    
+    <main id="carta">
+        <div class="container-letter">
+            <div class="cover"></div>
+            <span class="heart">♥</span>
+            <p class="paper" id="mainMessage">
+                Te amo como no tienes idea, mi mapachita preciosa <3
+            </p>
+            <div class="letter"></div>
+        </div>
+        <div class="options">
+            <button id="open">Abrir</button>
+            <button id="close">Cerrar</button>
+        </div>
+    </main>
+    
+    <script src="pink heart.js"></script>
+    <script>
+        // read custom message from query strings
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const messageCustom = urlSearchParams.get('message');
+        if (messageCustom) {
+            const mainMessageElement = document.querySelector('#mainMessage');
+            mainMessageElement.textContent = decodeURI(messageCustom);
+        }
+
+        // Animación después de 10 segundos
+        setTimeout(() => {
+            document.getElementById("pinkboard").style.display = "none"; // Oculta la animación
+            document.getElementById("carta").style.display = "flex"; // Muestra la carta correctamente
+        }, 10000);
+
+        // Funcionalidad de abrir y cerrar la carta
+        const btnOpenElement = document.querySelector('#open');
+        const btnCloseElement = document.querySelector('#close');
+        btnCloseElement.disabled = true;
+
+        btnOpenElement.addEventListener('click', () => {
+            btnOpenElement.disabled = true;
+            btnCloseElement.disabled = false;
+            const coverElement = document.querySelector('.cover');
+            coverElement.classList.add('open-cover');
+
+            setTimeout(() => {
+                coverElement.style.zIndex = -1;
+                const paperElement = document.querySelector('.paper');
+                paperElement.classList.remove('close-paper');
+                paperElement.classList.add('open-paper');
+
+                // animación del corazón
+                const heartElement = document.querySelector('.heart');
+                heartElement.style.display = 'block';
+            }, 500);
+        });
+
+        btnCloseElement.addEventListener('click', () => {
+            btnOpenElement.disabled = false;
+            btnCloseElement.disabled = true;
+            const coverElement = document.querySelector('.cover');
+            const paperElement = document.querySelector('.paper');
+            paperElement.classList.remove('open-paper');
+            paperElement.classList.add('close-paper');
+            
+            setTimeout(() => {
+                coverElement.style.zIndex = 0;
+                coverElement.classList.remove('open-cover');
+                
+                // animación del corazón
+                const heartElement = document.querySelector('.heart');
+                heartElement.style.display = 'none';
+            }, 500);
+        });
+    </script>
+</body>
+</html>
