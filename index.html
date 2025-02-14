@@ -17,6 +17,16 @@
         #carta {
             display: none;
         }
+        #startMusic {
+            position: fixed;
+            bottom: 20px;
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -41,9 +51,20 @@
             <button id="close">Cerrar</button>
         </div>
     </main>
-    
+
+    <button id="startMusic">Iniciar música</button>
+
     <script src="pink heart.js"></script>
     <script>
+        // Función para iniciar la música cuando el usuario hace clic
+        const startMusicButton = document.getElementById('startMusic');
+        const musicIframe = document.getElementById('bg-music');
+
+        startMusicButton.addEventListener('click', () => {
+            musicIframe.src = "https://www.youtube.com/embed/IVluKJqdEfE?autoplay=1&loop=1&playlist=IVluKJqdEfE";
+            startMusicButton.style.display = 'none'; // Ocultar el botón después de iniciar la música
+        });
+
         // read custom message from query strings
         const urlSearchParams = new URLSearchParams(window.location.search);
         const messageCustom = urlSearchParams.get('message');
