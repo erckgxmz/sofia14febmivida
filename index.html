@@ -51,7 +51,7 @@
         </div>
         <div class="options">
             <button id="open">Abrir</button>
-            <button id="close">Cerrar</button>
+            <button id="close" disabled>Cerrar</button>
         </div>
     </main>
     
@@ -101,6 +101,36 @@
 
             drawHearts();
         }
+
+        document.getElementById("open").addEventListener("click", () => {
+            document.getElementById("open").disabled = true;
+            document.getElementById("close").disabled = false;
+            const coverElement = document.querySelector(".cover");
+            coverElement.classList.add("open-cover");
+
+            setTimeout(() => {
+                coverElement.style.zIndex = -1;
+                const paperElement = document.querySelector(".paper");
+                paperElement.classList.remove("close-paper");
+                paperElement.classList.add("open-paper");
+                document.querySelector(".heart").style.display = "block";
+            }, 500);
+        });
+
+        document.getElementById("close").addEventListener("click", () => {
+            document.getElementById("open").disabled = false;
+            document.getElementById("close").disabled = true;
+            const coverElement = document.querySelector(".cover");
+            const paperElement = document.querySelector(".paper");
+            paperElement.classList.remove("open-paper");
+            paperElement.classList.add("close-paper");
+            
+            setTimeout(() => {
+                coverElement.style.zIndex = 0;
+                coverElement.classList.remove("open-cover");
+                document.querySelector(".heart").style.display = "none";
+            }, 500);
+        });
     </script>
 </body>
 </html>
