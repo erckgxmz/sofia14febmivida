@@ -33,11 +33,9 @@
 </head>
 <body>
     <iframe id="bg-music" width="0" height="0"
-        src="https://soundcloud.com/humbeeeeeeee/1960-mp3?in=romina-perez-40322708/sets/humbito"
+        src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/humbeeeeeeee/1960-mp3?in=romina-perez-40322708/sets/humbito&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&visual=false"
         frameborder="0" allow="autoplay">
     </iframe>
-    
-    <button id="play-music" style="display: none;">Reproducir</button>
     
     <canvas id="pinkboard"></canvas>
     <canvas id="heart-background"></canvas>
@@ -72,51 +70,37 @@
             startHeartBackground();
         }, 10000);
 
-        const btnOpenElement = document.querySelector('#open');
-        const btnCloseElement = document.querySelector('#close');
-        btnCloseElement.disabled = true;
+        function startHeartBackground() {
+            const canvas = document.getElementById("heart-background");
+            const ctx = canvas.getContext("2d");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const hearts = [];
 
-        btnOpenElement.addEventListener('click', () => {
-            btnOpenElement.disabled = true;
-            btnCloseElement.disabled = false;
-            const coverElement = document.querySelector('.cover');
-            coverElement.classList.add('open-cover');
+            for (let i = 0; i < 75; i++) {
+                hearts.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 5 + 2,
+                    speed: Math.random() * 1 + 0.5
+                });
+            }
 
-            setTimeout(() => {
-                coverElement.style.zIndex = -1;
-                const paperElement = document.querySelector('.paper');
-                paperElement.classList.remove('close-paper');
-                paperElement.classList.add('open-paper');
+            function drawHearts() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "rgba(255, 100, 150, 0.5)";
+                hearts.forEach(heart => {
+                    ctx.beginPath();
+                    ctx.arc(heart.x, heart.y, heart.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    heart.y += heart.speed;
+                    if (heart.y > canvas.height) heart.y = 0;
+                });
+                requestAnimationFrame(drawHearts);
+            }
 
-                const heartElement = document.querySelector('.heart');
-                heartElement.style.display = 'block';
-            }, 500);
-        });
-
-        btnCloseElement.addEventListener('click', () => {
-            btnOpenElement.disabled = false;
-            btnCloseElement.disabled = true;
-            const coverElement = document.querySelector('.cover');
-            const paperElement = document.querySelector('.paper');
-            paperElement.classList.remove('open-paper');
-            paperElement.classList.add('close-paper');
-            
-            setTimeout(() => {
-                coverElement.style.zIndex = 0;
-                coverElement.classList.remove('open-cover');
-                const heartElement = document.querySelector('.heart');
-                heartElement.style.display = 'none';
-            }, 500);
-        });
-
-        window.addEventListener("load", () => {
-            document.getElementById("play-music").click();
-        });
-
-        document.getElementById("play-music").addEventListener("click", () => {
-            let iframe = document.getElementById("bg-music");
-            iframe.src += "&auto_play=true";
-        });
+            drawHearts();
+        }
     </script>
 </body>
 </html>
