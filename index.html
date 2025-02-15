@@ -75,13 +75,16 @@
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         let hearts = [];
+        let roses = new Image();
+        roses.src = "https://i.imgur.com/5zO5j5K.png";
 
         for (let i = 0; i < 75; i++) {
             hearts.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
                 size: Math.random() * 5 + 2,
-                speed: Math.random() * 1 + 0.5
+                speed: Math.random() * 1 + 0.5,
+                isRose: false
             });
         }
 
@@ -99,11 +102,15 @@
 
         function drawHearts() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "rgba(255, 100, 150, 0.5)";
             hearts.forEach(heart => {
-                ctx.beginPath();
-                ctx.arc(heart.x, heart.y, heart.size, 0, Math.PI * 2);
-                ctx.fill();
+                if (heart.isRose) {
+                    ctx.drawImage(roses, heart.x, heart.y, heart.size * 3, heart.size * 3);
+                } else {
+                    ctx.fillStyle = "rgba(255, 100, 150, 0.5)";
+                    ctx.beginPath();
+                    ctx.arc(heart.x, heart.y, heart.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
                 heart.y += heart.speed;
                 if (heart.y > canvas.height) heart.y = 0;
             });
@@ -126,7 +133,7 @@
                 paperElement.classList.remove("close-paper");
                 paperElement.classList.add("open-paper");
                 heartElement.style.display = "block";
-                hearts.forEach(heart => heart.size = Math.random() * 15 + 10);
+                hearts.forEach(heart => heart.isRose = true);
             }, 500);
         });
 
@@ -144,7 +151,7 @@
                 coverElement.style.zIndex = 0;
                 coverElement.classList.remove("open-cover");
                 heartElement.style.display = "none";
-                hearts.forEach(heart => heart.size = Math.random() * 5 + 2);
+                hearts.forEach(heart => heart.isRose = false);
             }, 500);
         });
     </script>
