@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> SOFIAAA te amo 💖</title>
+    <title>SOFIAAA te amo 💖</title>
     <link rel="stylesheet" href="pink heart.css">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -38,6 +38,11 @@
             font-weight: bold;
             color: white;
             display: none;
+            z-index: 2;
+        }
+        .options {
+            position: relative;
+            z-index: 3;
         }
     </style>
 </head>
@@ -87,6 +92,7 @@
         canvas.height = window.innerHeight;
         let hearts = [];
 
+        // Crear partículas de corazones que caen
         for (let i = 0; i < 75; i++) {
             hearts.push({
                 x: Math.random() * canvas.width,
@@ -97,10 +103,15 @@
             });
         }
 
+        // Función que dibuja las partículas
         function drawHearts() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.fillStyle = "rgba(255, 100, 150, 0.5)";
             hearts.forEach(heart => {
+                heart.y += heart.speed; // Corazones cayendo
+                if (heart.y > canvas.height) { // Reiniciar posición si el corazón llega al fondo
+                    heart.y = -heart.size;
+                }
                 ctx.beginPath();
                 ctx.arc(heart.x, heart.y, heart.size, 0, Math.PI * 2);
                 ctx.fill();
@@ -109,6 +120,7 @@
         }
         drawHearts();
 
+        // Mostrar el nombre "SOFIA" cuando se abre la carta
         document.getElementById("open").addEventListener("click", () => {
             document.getElementById("open").disabled = true;
             document.getElementById("close").disabled = false;
@@ -125,9 +137,51 @@
                 paperElement.classList.add("open-paper");
                 heartElement.style.display = "block";
                 wordContainer.style.display = "block";
+                // Ahora formamos el nombre "SOFIA" con las partículas
+                formNameWithHearts();
             }, 500);
         });
 
+        // Función que usa las partículas para formar "SOFIA"
+        function formNameWithHearts() {
+            const name = "SOFIA";
+            const fontSize = 80;
+            const positions = [];
+
+            // Convertir las letras en coordenadas
+            for (let i = 0; i < name.length; i++) {
+                const letter = name[i];
+                const letterPositions = getLetterPositions(letter, fontSize);
+                positions.push(letterPositions);
+            }
+
+            // Asignar las posiciones de las partículas para formar las letras
+            hearts.forEach(heart => {
+                const randomLetterIndex = Math.floor(Math.random() * positions.length);
+                const letterPos = positions[randomLetterIndex];
+                if (letterPos) {
+                    const pos = letterPos[Math.floor(Math.random() * letterPos.length)];
+                    heart.x = pos.x;
+                    heart.y = pos.y;
+                }
+            });
+        }
+
+        // Función que devuelve las posiciones de las partículas para cada letra
+        function getLetterPositions(letter, fontSize) {
+            const canvas2 = document.createElement("canvas");
+            const ctx2 = canvas2.getContext("2d");
+            ctx2.font = fontSize + "px Arial";
+            const width = ctx2.measureText(letter).width;
+            const positions = [];
+
+            for (let i = 0; i < width; i += fontSize / 2) {
+                positions.push({ x: i + 50, y: Math.random() * 100 + 100 });
+            }
+            return positions;
+        }
+
+        // Cerrar la carta
         document.getElementById("close").addEventListener("click", () => {
             document.getElementById("open").disabled = false;
             document.getElementById("close").disabled = true;
