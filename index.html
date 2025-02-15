@@ -76,38 +76,57 @@
         canvas.height = window.innerHeight;
         let hearts = [];
 
-        for (let i = 0; i < 75; i++) {
+        for (let i = 0; i < 100; i++) {
             hearts.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
                 size: Math.random() * 5 + 2,
                 speed: Math.random() * 1 + 0.5,
-                isSymbol: false
+                targetX: null,
+                targetY: null
             });
         }
 
         function drawHearts() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.font = "30px Arial";
-            ctx.textAlign = "center";
-            ctx.fillStyle = "white";
-            
             hearts.forEach(heart => {
-                if (heart.isSymbol) {
-                    ctx.fillText("♡", heart.x, heart.y);
+                ctx.fillStyle = "rgba(255, 100, 150, 0.5)";
+                ctx.beginPath();
+                ctx.arc(heart.x, heart.y, heart.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                if (heart.targetX !== null && heart.targetY !== null) {
+                    heart.x += (heart.targetX - heart.x) * 0.05;
+                    heart.y += (heart.targetY - heart.y) * 0.05;
                 } else {
-                    ctx.fillStyle = "rgba(255, 100, 150, 0.5)";
-                    ctx.beginPath();
-                    ctx.arc(heart.x, heart.y, heart.size, 0, Math.PI * 2);
-                    ctx.fill();
+                    heart.y += heart.speed;
+                    if (heart.y > canvas.height) heart.y = 0;
                 }
-                heart.y += heart.speed;
-                if (heart.y > canvas.height) heart.y = 0;
             });
             requestAnimationFrame(drawHearts);
         }
-
         drawHearts();
+
+        function formWord(word) {
+            const startX = canvas.width / 2 - 150;
+            const startY = 100;
+            ctx.font = "bold 50px Arial";
+            ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+            ctx.fillText(word, startX, startY);
+            const imageData = ctx.getImageData(startX, startY - 50, 300, 100);
+            let index = 0;
+
+            for (let y = 0; y < imageData.height; y += 10) {
+                for (let x = 0; x < imageData.width; x += 10) {
+                    let alpha = imageData.data[(y * imageData.width + x) * 4 + 3];
+                    if (alpha > 100 && index < hearts.length) {
+                        hearts[index].targetX = startX + x;
+                        hearts[index].targetY = startY - 50 + y;
+                        index++;
+                    }
+                }
+            }
+        }
 
         document.getElementById("open").addEventListener("click", () => {
             document.getElementById("open").disabled = true;
@@ -123,31 +142,7 @@
                 paperElement.classList.remove("close-paper");
                 paperElement.classList.add("open-paper");
                 heartElement.style.display = "block";
-                hearts.forEach(heart => {
-                    heart.isSymbol = true;
-                    heart.size *= 5;
-                });
-            }, 500);
-        });
-
-        document.getElementById("close").addEventListener("click", () => {
-            document.getElementById("open").disabled = false;
-            document.getElementById("close").disabled = true;
-            const coverElement = document.querySelector(".cover");
-            const paperElement = document.querySelector(".paper");
-            const heartElement = document.querySelector(".heart");
-
-            paperElement.classList.remove("open-paper");
-            paperElement.classList.add("close-paper");
-            
-            setTimeout(() => {
-                coverElement.style.zIndex = 0;
-                coverElement.classList.remove("open-cover");
-                heartElement.style.display = "none";
-                hearts.forEach(heart => {
-                    heart.isSymbol = false;
-                    heart.size /= 5;
-                });
+                formWord("SOFIA");
             }, 500);
         });
     </script>
