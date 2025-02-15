@@ -29,6 +29,16 @@
             z-index: 1;
             pointer-events: none;
         }
+        #wordContainer {
+            position: absolute;
+            top: calc(100% + 60px);
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 40px;
+            font-weight: bold;
+            color: white;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -53,6 +63,7 @@
             <button id="open">Abrir</button>
             <button id="close" disabled>Cerrar</button>
         </div>
+        <div id="wordContainer">SOFIA</div>
     </main>
     
     <script src="pink heart.js"></script>
@@ -76,57 +87,27 @@
         canvas.height = window.innerHeight;
         let hearts = [];
 
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 75; i++) {
             hearts.push({
                 x: Math.random() * canvas.width,
                 y: Math.random() * canvas.height,
                 size: Math.random() * 5 + 2,
                 speed: Math.random() * 1 + 0.5,
-                targetX: null,
-                targetY: null
+                isStatic: false
             });
         }
 
         function drawHearts() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(255, 100, 150, 0.5)";
             hearts.forEach(heart => {
-                ctx.fillStyle = "rgba(255, 100, 150, 0.5)";
                 ctx.beginPath();
                 ctx.arc(heart.x, heart.y, heart.size, 0, Math.PI * 2);
                 ctx.fill();
-                
-                if (heart.targetX !== null && heart.targetY !== null) {
-                    heart.x += (heart.targetX - heart.x) * 0.05;
-                    heart.y += (heart.targetY - heart.y) * 0.05;
-                } else {
-                    heart.y += heart.speed;
-                    if (heart.y > canvas.height) heart.y = 0;
-                }
             });
             requestAnimationFrame(drawHearts);
         }
         drawHearts();
-
-        function formWord(word) {
-            const startX = canvas.width / 2 - 150;
-            const startY = 100;
-            ctx.font = "bold 50px Arial";
-            ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
-            ctx.fillText(word, startX, startY);
-            const imageData = ctx.getImageData(startX, startY - 50, 300, 100);
-            let index = 0;
-
-            for (let y = 0; y < imageData.height; y += 10) {
-                for (let x = 0; x < imageData.width; x += 10) {
-                    let alpha = imageData.data[(y * imageData.width + x) * 4 + 3];
-                    if (alpha > 100 && index < hearts.length) {
-                        hearts[index].targetX = startX + x;
-                        hearts[index].targetY = startY - 50 + y;
-                        index++;
-                    }
-                }
-            }
-        }
 
         document.getElementById("open").addEventListener("click", () => {
             document.getElementById("open").disabled = true;
@@ -134,6 +115,7 @@
             const coverElement = document.querySelector(".cover");
             const paperElement = document.querySelector(".paper");
             const heartElement = document.querySelector(".heart");
+            const wordContainer = document.getElementById("wordContainer");
 
             coverElement.classList.add("open-cover");
 
@@ -142,7 +124,26 @@
                 paperElement.classList.remove("close-paper");
                 paperElement.classList.add("open-paper");
                 heartElement.style.display = "block";
-                formWord("SOFIA");
+                wordContainer.style.display = "block";
+            }, 500);
+        });
+
+        document.getElementById("close").addEventListener("click", () => {
+            document.getElementById("open").disabled = false;
+            document.getElementById("close").disabled = true;
+            const coverElement = document.querySelector(".cover");
+            const paperElement = document.querySelector(".paper");
+            const heartElement = document.querySelector(".heart");
+            const wordContainer = document.getElementById("wordContainer");
+
+            paperElement.classList.remove("open-paper");
+            paperElement.classList.add("close-paper");
+            
+            setTimeout(() => {
+                coverElement.style.zIndex = 0;
+                coverElement.classList.remove("open-cover");
+                heartElement.style.display = "none";
+                wordContainer.style.display = "none";
             }, 500);
         });
     </script>
