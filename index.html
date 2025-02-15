@@ -70,37 +70,47 @@
             startHeartBackground();
         }, 10000);
 
-        function startHeartBackground() {
-            const canvas = document.getElementById("heart-background");
-            const ctx = canvas.getContext("2d");
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            const hearts = [];
+        const canvas = document.getElementById("heart-background");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        let hearts = [];
 
-            for (let i = 0; i < 75; i++) {
-                hearts.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 5 + 2,
-                    speed: Math.random() * 1 + 0.5
-                });
-            }
-
-            function drawHearts() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = "rgba(255, 100, 150, 0.5)";
-                hearts.forEach(heart => {
-                    ctx.beginPath();
-                    ctx.arc(heart.x, heart.y, heart.size, 0, Math.PI * 2);
-                    ctx.fill();
-                    heart.y += heart.speed;
-                    if (heart.y > canvas.height) heart.y = 0;
-                });
-                requestAnimationFrame(drawHearts);
-            }
-
-            drawHearts();
+        for (let i = 0; i < 75; i++) {
+            hearts.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 5 + 2,
+                speed: Math.random() * 1 + 0.5
+            });
         }
+
+        canvas.addEventListener("mousemove", (event) => {
+            hearts.forEach(heart => {
+                let dx = heart.x - event.clientX;
+                let dy = heart.y - event.clientY;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < 50) {
+                    heart.x += dx * 0.05;
+                    heart.y += dy * 0.05;
+                }
+            });
+        });
+
+        function drawHearts() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "rgba(255, 100, 150, 0.5)";
+            hearts.forEach(heart => {
+                ctx.beginPath();
+                ctx.arc(heart.x, heart.y, heart.size, 0, Math.PI * 2);
+                ctx.fill();
+                heart.y += heart.speed;
+                if (heart.y > canvas.height) heart.y = 0;
+            });
+            requestAnimationFrame(drawHearts);
+        }
+
+        drawHearts();
 
         document.getElementById("open").addEventListener("click", () => {
             document.getElementById("open").disabled = true;
@@ -116,6 +126,7 @@
                 paperElement.classList.remove("close-paper");
                 paperElement.classList.add("open-paper");
                 heartElement.style.display = "block";
+                hearts.forEach(heart => heart.size = Math.random() * 15 + 10);
             }, 500);
         });
 
@@ -133,6 +144,7 @@
                 coverElement.style.zIndex = 0;
                 coverElement.classList.remove("open-cover");
                 heartElement.style.display = "none";
+                hearts.forEach(heart => heart.size = Math.random() * 5 + 2);
             }, 500);
         });
     </script>
