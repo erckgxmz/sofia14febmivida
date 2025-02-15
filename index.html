@@ -82,29 +82,25 @@
                 y: Math.random() * canvas.height,
                 size: Math.random() * 5 + 2,
                 speed: Math.random() * 1 + 0.5,
-                isFlower: false
+                isSymbol: false
             });
         }
 
-        canvas.addEventListener("mousemove", (event) => {
-            hearts.forEach(heart => {
-                let dx = heart.x - event.clientX;
-                let dy = heart.y - event.clientY;
-                let distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < 50) {
-                    heart.x += dx * 0.05;
-                    heart.y += dy * 0.05;
-                }
-            });
-        });
-
         function drawHearts() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = "30px Arial";
+            ctx.textAlign = "center";
+            ctx.fillStyle = "white";
+            
             hearts.forEach(heart => {
-                ctx.font = `${heart.size * 3}px Arial`;
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText(heart.isFlower ? "🌸" : "❤️", heart.x, heart.y);
+                if (heart.isSymbol) {
+                    ctx.fillText("♡", heart.x, heart.y);
+                } else {
+                    ctx.fillStyle = "rgba(255, 100, 150, 0.5)";
+                    ctx.beginPath();
+                    ctx.arc(heart.x, heart.y, heart.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
                 heart.y += heart.speed;
                 if (heart.y > canvas.height) heart.y = 0;
             });
@@ -127,7 +123,10 @@
                 paperElement.classList.remove("close-paper");
                 paperElement.classList.add("open-paper");
                 heartElement.style.display = "block";
-                hearts.forEach(heart => heart.isFlower = true);
+                hearts.forEach(heart => {
+                    heart.isSymbol = true;
+                    heart.size *= 5;
+                });
             }, 500);
         });
 
@@ -145,7 +144,10 @@
                 coverElement.style.zIndex = 0;
                 coverElement.classList.remove("open-cover");
                 heartElement.style.display = "none";
-                hearts.forEach(heart => heart.isFlower = false);
+                hearts.forEach(heart => {
+                    heart.isSymbol = false;
+                    heart.size /= 5;
+                });
             }, 500);
         });
     </script>
